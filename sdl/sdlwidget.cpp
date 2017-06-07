@@ -9,6 +9,8 @@
 
 //const int FRAME_WIDTH = 1280;
 //const int FRAME_HEIGHT = 720;
+
+
  const int FRAME_WIDTH = 1920;
  const int FRAME_HEIGHT = 1080;
 
