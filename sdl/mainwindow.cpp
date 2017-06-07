@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //m_listWdg.append( ui->pshBtnClick );
 
-	iRenderCount = 2;
+    iRenderCount = 1;
 	
 	m_listWdgTotal.append(ui->widget_1_1);
 	m_listWdgTotal.append(ui->widget_1_2);

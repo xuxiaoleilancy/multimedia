@@ -1,11 +1,16 @@
 ﻿#include "sdlwidget.h"
 #include <QElapsedTimer>
-#include "SDL_image.h"
 
-const int FRAME_WIDTH = 1280;
-const int FRAME_HEIGHT = 720;
-// const int FRAME_WIDTH = 1920;
-// const int FRAME_HEIGHT = 1080;
+#ifdef Q_OS_WIN32
+#include "SDL_image.h"
+#else
+#include <SDL2/SDL_image.h>
+#endif
+
+//const int FRAME_WIDTH = 1280;
+//const int FRAME_HEIGHT = 720;
+ const int FRAME_WIDTH = 1920;
+ const int FRAME_HEIGHT = 1080;
 
 //const int FRAME_WIDTH = 352;
 //const int FRAME_HEIGHT = 288;
@@ -66,10 +71,7 @@ void SDLWidget::run()
   //  imageSurfaceRun();
   //  return;
 
-
-   // for(int i=0;i<1000;i++){
-        yuvRenderRun();
-   // }
+    yuvRenderRun();
     return;
 
 }
@@ -164,18 +166,22 @@ void SDLWidget::imageRenderRun()
 
 void SDLWidget::yuvRenderRun()
 {
-	FILE * pFile = fopen("D:\\1080p\\CrowdRun_1280x720.yuv", "rb");
-	//FILE * pFile = fopen("D:\\1_1920_1080_24fps.yuv", "rb");
+#ifdef Q_OS_LINUX
+    //   FILE * pFile = fopen( "//home//suirui//svn//1_CodeLib//05.PC//SRQT//bin_debug//yuvfile//flower_cif_352_288_420.yuv", "rb" );
 
- //   FILE * pFile = fopen( "//home//suirui//svn//1_CodeLib//05.PC//SRQT//bin_debug//yuvfile//flower_cif_352_288_420.yuv", "rb" );
+       FILE * pFile = fopen( "//home//suirui//svn//1_CodeLib//05.PC//SRQT//bin_debug//yuvfile//1_1920_1080_24fps.yuv", "rb" );
 
+    //   FILE * pFile = fopen( "//home//suirui//svn//1_CodeLib//05.PC//SRQT//bin_debug//yuvfile//flower_cif_352_288_420.yuv", "rb" );
+#else
+    FILE * pFile = fopen("D:\\1080p\\CrowdRun_1280x720.yuv", "rb");
+    //FILE * pFile = fopen("D:\\1_1920_1080_24fps.yuv", "rb");
 
+#endif
 
     if ( pFile == NULL )
     {
         int u = 0;
     }
-
     SDL_Rect sdlRT;
 
     sdlRT.w = FRAME_WIDTH;
@@ -196,49 +202,49 @@ void SDLWidget::yuvRenderRun()
     //计算yuv一行数据占的字节数
     int iPitch = iW*SDL_BYTESPERPIXEL(SDL_PIXELFORMAT_IYUV);
 
+    for(int i=0;i<1000;i++){
+        fseek(pFile, 0, SEEK_SET);
+        while ( fread( szData, 1, iW*iH*3/2, pFile ) != NULL ){
+            SDL_LockMutex(m_pMutex);
+            foreach (SDL_Window* pWindow, m_pMapWindow.values()) {
+                int iWidth = 0;
+                int iHeight = 0;
+                //int x;
+                //int y;
+                //SDL_GetWindowPosition(pWindow,&x,&y);
+                SDL_GetWindowSize( pWindow, &iWidth, &iHeight );
 
-    //读yuv文件，该文件中存放的数据尺寸为 352*288的yv12数据
-    while ( fread( szData, 1, iW*iH*3/2, pFile ) != NULL )
-    {
+                dstRT.x = 0;
+                dstRT.y = 0;
+                dstRT.h = iHeight;
+                dstRT.w = iWidth;
+#ifdef Q_OS_WIN32
+                SDL_Renderer * pRender = SDL_CreateRenderer(pWindow, 0, SDL_RENDERER_TARGETTEXTURE);
+#else
 
-        SDL_LockMutex(m_pMutex);
-        foreach (SDL_Window* pWindow, m_pMapWindow.values()) {
-            int iWidth = 0;
-            int iHeight = 0;
-            int x;
-            int y;
-            SDL_GetWindowPosition(pWindow,&x,&y);
-            SDL_GetWindowSize( pWindow, &iWidth, &iHeight );
+                SDL_Renderer * pRender = SDL_CreateRenderer( pWindow, -1, SDL_RENDERER_SOFTWARE );
+#endif               //创建纹理
+                SDL_Texture * pTexture = SDL_CreateTexture( pRender,SDL_PIXELFORMAT_IYUV, SDL_TEXTUREACCESS_STREAMING, iW, iH );
 
-            dstRT.x = 0;
-            dstRT.y = 0;
-            dstRT.h = iHeight;
-            dstRT.w = iWidth;
+                int i = SDL_UpdateTexture( pTexture, &sdlRT, szData, iPitch );
+                SDL_RenderClear( pRender );
+                SDL_RenderCopy( pRender, pTexture, &sdlRT, &dstRT );
+                SDL_RenderPresent( pRender );
 
-			SDL_Renderer * pRender = SDL_CreateRenderer(pWindow, 0, SDL_RENDERER_TARGETTEXTURE);
-            //创建纹理
-            SDL_Texture * pTexture = SDL_CreateTexture( pRender,SDL_PIXELFORMAT_IYUV, SDL_TEXTUREACCESS_STREAMING, iW, iH );
+                if ( pTexture != NULL ){
+                    SDL_DestroyTexture( pTexture );
+                    pTexture = NULL    ;
+                }
 
-            int i = SDL_UpdateTexture( pTexture, &sdlRT, szData, iPitch );
-            SDL_RenderClear( pRender );
-            SDL_RenderCopy( pRender, pTexture, &sdlRT, &dstRT );
-            SDL_RenderPresent( pRender );
-
-            if ( pTexture != NULL )
-            {
-                SDL_DestroyTexture( pTexture );
-                pTexture = NULL    ;
+                if ( pRender != NULL ){
+                    SDL_DestroyRenderer( pRender );
+                    pRender = NULL;
+                }
             }
-
-            if ( pRender != NULL )
-            {
-                SDL_DestroyRenderer( pRender );
-                pRender = NULL;
-            }
+            SDL_UnlockMutex(m_pMutex);
+            usleep(30);
         }
-        SDL_UnlockMutex(m_pMutex);
-        //usleep(10);
     }
 
-    fclose(pFile);
+     fclose(pFile);
 }

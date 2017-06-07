@@ -36,8 +36,10 @@ unix{
 LIBS += -L/usr/lib/x86_64-linux-gnu -lSDL2 -lSDL2_image
 }
 
+win32{
     INCLUDEPATH += . C:/SDL2/SDL2-2.0.5/include C:/SDL2/SDL2_image-2.0.1/include
     LIBS += -LC:/SDL2/SDL2-2.0.5/lib/x86 -lSDL2
     LIBS += -LC:/SDL2/SDL2-2.0.5/lib/x86 -lSDL2test
 
     LIBS += -LC:/SDL2/SDL2_image-2.0.1/lib/x86 -lSDL2_image
+}
