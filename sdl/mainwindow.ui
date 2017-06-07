@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>871</width>
+    <height>577</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="4" column="2">
+     <widget class="QWidget" name="widget_5_3" native="true"/>
+    </item>
+    <item row="2" column="4">
+     <widget class="QWidget" name="widget_3_5" native="true"/>
+    </item>
+    <item row="0" column="0">
+     <widget class="QWidget" name="widget_1_1" native="true">
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="QPushButton" name="pshBtnClick">
+         <property name="text">
+          <string>click me</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QWidget" name="widget_1_2" native="true">
+      <layout class="QGridLayout" name="gridLayout_3"/>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QWidget" name="widget_2_1" native="true"/>
+    </item>
+    <item row="1" column="1">
+     <widget class="QWidget" name="widget_2_2" native="true"/>
+    </item>
+    <item row="3" column="4">
+     <widget class="QWidget" name="widget_4_5" native="true"/>
+    </item>
+    <item row="2" column="1">
+     <widget class="QWidget" name="widget_3_2" native="true"/>
+    </item>
+    <item row="3" column="0">
+     <widget class="QWidget" name="widget_4_1" native="true"/>
+    </item>
+    <item row="2" column="0">
+     <widget class="QWidget" name="widget_3_1" native="true"/>
+    </item>
+    <item row="4" column="4">
+     <widget class="QWidget" name="widget_5_5" native="true"/>
+    </item>
+    <item row="0" column="4">
+     <widget class="QWidget" name="widget_1_5" native="true"/>
+    </item>
+    <item row="0" column="3">
+     <widget class="QWidget" name="widget_1_4" native="true"/>
+    </item>
+    <item row="4" column="1">
+     <widget class="QWidget" name="widget_5_2" native="true"/>
+    </item>
+    <item row="1" column="2">
+     <widget class="QWidget" name="widget_2_3" native="true"/>
+    </item>
+    <item row="0" column="2">
+     <widget class="QWidget" name="widget_1_3" native="true"/>
+    </item>
+    <item row="3" column="2">
+     <widget class="QWidget" name="widget_4_3" native="true"/>
+    </item>
+    <item row="1" column="3">
+     <widget class="QWidget" name="widget_2_4" native="true"/>
+    </item>
+    <item row="4" column="3">
+     <widget class="QWidget" name="widget_5_4" native="true"/>
+    </item>
+    <item row="2" column="3">
+     <widget class="QWidget" name="widget_3_4" native="true"/>
+    </item>
+    <item row="2" column="2">
+     <widget class="QWidget" name="widget_3_3" native="true"/>
+    </item>
+    <item row="3" column="1">
+     <widget class="QWidget" name="widget_4_2" native="true"/>
+    </item>
+    <item row="3" column="3">
+     <widget class="QWidget" name="widget_4_4" native="true"/>
+    </item>
+    <item row="1" column="4">
+     <widget class="QWidget" name="widget_2_5" native="true"/>
+    </item>
+    <item row="4" column="0">
+     <widget class="QWidget" name="widget_5_1" native="true"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>
