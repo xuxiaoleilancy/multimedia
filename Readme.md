@@ -1,3 +1,3 @@
 
-# this is my multimedia project
+# this is my multimedia repository
 
