@@ -1,4 +1,16 @@
 ﻿project(thread)
 cmake_minimum_required(VERSION 2.8)
 aux_source_directory(. SRC_LIST)
+
+IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
+	include_directories("C:/SDL/include")
+	link_directories("C:/SDL/lib/x86")
+	find_library(RUNTIME_LIB "C:/SDL/lib/x86" NO_DEFAULT_PATH)
+ELSE ()  
+	include_directories("C:/SDL/include")
+	link_directories("C:/SDL/lib/x86")
+	find_library(RUNTIME_LIB "C:/SDL/lib/x86" NO_DEFAULT_PATH)
+ENDIF (CMAKE_SYSTEM_NAME MATCHES "Linux")
+
+link_libraries(SDL2 SDL2_image SDL2main)
 add_executable(${PROJECT_NAME} ${SRC_LIST})

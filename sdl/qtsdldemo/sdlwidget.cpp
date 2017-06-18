@@ -3,26 +3,62 @@
 
 #ifdef Q_OS_WIN32
 #include "SDL_image.h"
+#include "SDL_events.h"
+#include "SDL_thread.h"
 #else
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_events.h>
 #endif
 
-//const int FRAME_WIDTH = 1280;
-//const int FRAME_HEIGHT = 720;
+const int FRAME_WIDTH = 1280;
+const int FRAME_HEIGHT = 720;
 
 
- const int FRAME_WIDTH = 1920;
- const int FRAME_HEIGHT = 1080;
+// const int FRAME_WIDTH = 1920;
+// const int FRAME_HEIGHT = 1080;
 
 //const int FRAME_WIDTH = 352;
 //const int FRAME_HEIGHT = 288;
 char szData[FRAME_WIDTH*FRAME_HEIGHT*2] = {0};
+
+
+//Refresh Event
+#define SFM_REFRESH_EVENT  (SDL_USEREVENT + 1)
+
+#define SFM_BREAK_EVENT  (SDL_USEREVENT + 2)
+
+int thread_exit=0;
+int thread_pause=0;
+
+int sfp_refresh_thread(void *opaque){
+    thread_exit=0;
+    thread_pause=0;
+
+    while (!thread_exit) {
+        if(!thread_pause){
+            SDL_Event event;
+            event.type = SFM_REFRESH_EVENT;
+            SDL_PushEvent(&event);
+        }
+        SDL_Delay(40);
+    }
+    thread_exit=0;
+    thread_pause=0;
+    //Break
+    SDL_Event event;
+    event.type = SFM_BREAK_EVENT;
+    SDL_PushEvent(&event);
+
+    return 0;
+}
 
 SDLWidget::SDLWidget()
 {
 
     SDL_Init(SDL_INIT_VIDEO);
     m_pMutex = SDL_CreateMutex();
+
+    m_pRefreshThread = SDL_CreateThread(sfp_refresh_thread,NULL,NULL);
 }
 
 SDLWidget::~SDLWidget()
@@ -56,13 +92,13 @@ void SDLWidget::resize(void* wid,const QSize &s)
 
 void SDLWidget::resize(void *wid, const QRect &r)
 {
-    SDL_LockMutex(m_pMutex);
+    SDL_mutexP(m_pMutex);
     if( m_pMapWindow.contains(wid) ){
         SDL_Window* pWindow = m_pMapWindow[wid];
         SDL_SetWindowPosition(pWindow,r.x(),r.y() );
         SDL_SetWindowSize( pWindow , r.width(),r.height());
     }
-    SDL_UnlockMutex(m_pMutex);
+    SDL_mutexV(m_pMutex);
 }
 
 void SDLWidget::run()
@@ -80,13 +116,25 @@ void SDLWidget::run()
 
 void SDLWidget::imageSurfaceRun()
 {
+
+    SDL_Event event;
     while(1){
 
-        QElapsedTimer timer;
-        timer.start();
+        SDL_WaitEvent(&event);
+        if( event.type == SFM_REFRESH_EVENT ){
 
-        SDL_LockMutex(m_pMutex);
+        }else if(event.type==SDL_KEYDOWN){
+        //Pause
+            if(event.key.keysym.sym==SDLK_SPACE){
+                thread_pause=!thread_pause;
+            }
+        }else if(event.type==SDL_QUIT){
+            thread_exit=1;
+        }else if(event.type==SFM_BREAK_EVENT){
+            break;
+        }
 
+        SDL_mutexP(m_pMutex);
         foreach (SDL_Window* pWindow, m_pMapWindow.values()) {
 
             SDL_Surface* pImageSurface = IMG_Load("/home/suirui/timg.png");
@@ -109,12 +157,7 @@ void SDLWidget::imageSurfaceRun()
             SDL_UpdateWindowSurface(pWindow);//更新显示copy the window surface to the screen
             SDL_FreeSurface(pImageSurface);
         }
-        SDL_UnlockMutex(m_pMutex);
-
-        int remainTime = 16 - timer.elapsed();
-        if( remainTime > 0 ){
-            msleep(remainTime);
-        }
+        SDL_mutexV(m_pMutex);
     }
 
 	//SDL_LockTexture()
@@ -203,11 +246,26 @@ void SDLWidget::yuvRenderRun()
 
     //计算yuv一行数据占的字节数
     int iPitch = iW*SDL_BYTESPERPIXEL(SDL_PIXELFORMAT_IYUV);
+    SDL_Event event;
 
     for(int i=0;i<1000;i++){
         fseek(pFile, 0, SEEK_SET);
         while ( fread( szData, 1, iW*iH*3/2, pFile ) != NULL ){
-            SDL_LockMutex(m_pMutex);
+
+            SDL_WaitEvent(&event);
+            if( event.type == SFM_REFRESH_EVENT ){
+
+            }else if(event.type==SDL_KEYDOWN){
+            //Pause
+                if(event.key.keysym.sym==SDLK_SPACE){
+                    thread_pause=!thread_pause;
+                }
+            }else if(event.type==SDL_QUIT){
+                thread_exit=1;
+            }else if(event.type==SFM_BREAK_EVENT){
+                break;
+            }
+            //SDL_mutexP(m_pMutex);
             foreach (SDL_Window* pWindow, m_pMapWindow.values()) {
                 int iWidth = 0;
                 int iHeight = 0;
@@ -243,8 +301,7 @@ void SDLWidget::yuvRenderRun()
                     pRender = NULL;
                 }
             }
-            SDL_UnlockMutex(m_pMutex);
-            usleep(30);
+           // SDL_mutexV(m_pMutex);
         }
     }
 

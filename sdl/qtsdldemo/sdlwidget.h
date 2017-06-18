@@ -10,6 +10,9 @@
 struct SDL_Window;
 struct SDL_mutex;
 struct SDL_Renderer;
+struct SDL_Thread;
+struct SDL_Texture;
+
 class SDLWidget : public QThread
 {
 public:
@@ -27,10 +30,13 @@ protected:
     void yuvRenderRun();
 private:
     QMap<void* , SDL_Window*> m_pMapWindow;
+    QMap<SDL_Window* , SDL_Renderer*> m_pMapWindow2Render;
+    QMap<SDL_Window* , SDL_Texture*> m_pMapWindow2Texture;
     QList<SDL_Window*> m_pWindowList;
     SDL_Window* m_pWindow;
     SDL_mutex* m_pMutex;
     SDL_Renderer* m_pRender;
+    SDL_Thread* m_pRefreshThread;
 };
 
 #endif // SDLWIDGET_H
