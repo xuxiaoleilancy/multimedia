@@ -1,0 +1,16 @@
+﻿project(aviPlayer)
+cmake_minimum_required(VERSION 2.8)
+aux_source_directory(. SRC_LIST)
+
+IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
+	include_directories("C:/opencv/opencv/build/include")
+	link_directories("C:/opencv/opencv/build/x86/vc12/lib")
+	find_library(RUNTIME_LIB "C:/opencv/opencv/build/x86/vc12/lib" NO_DEFAULT_PATH)
+ELSE ()  
+	include_directories("C:/opencv/opencv/build/include")
+	link_directories("C:/opencv/opencv/build/x86/vc12/lib")
+	find_library(RUNTIME_LIB "C:/opencv/opencv/build/x86/vc12/lib" NO_DEFAULT_PATH)
+ENDIF (CMAKE_SYSTEM_NAME MATCHES "Linux")
+
+link_libraries(opencv_highgui2413d opencv_imgproc2413d opencv_core2413d)
+add_executable(${PROJECT_NAME} ${SRC_LIST})
